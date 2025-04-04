@@ -1,25 +1,6 @@
 ----------------------------------------------
 --------------CUSTOM JOKERS-------------------
 
--- Add Joker
-function joker_add(jKey)
-
-    if type(jKey) == 'string' then
-        
-        local j = SMODS.create_card({
-            key = jKey,
-        })
-
-        j:add_to_deck()
-        G.jokers:emplace(j)
-
-        -- Manually apply eternal until stickers in SMODS.create_card is fixed
-        -- (Credit to @its_flowwey on Discord for helping out with this part!)
-        SMODS.Stickers["eternal"]:apply(j, true)
-
-    end
-end
-
 SMODS.Atlas{
     key = "GreedJokerA",
     path = "GreedCard.png",
@@ -715,9 +696,9 @@ SMODS.Atlas{
     py = 95
 }
 
-SMODS.Back{
+GREED_DECK = SMODS.Back{
     name = 'Deck of Greed',
-    key = 'greedDeck',
+    key = 'greed',
     atlas = 'GreedDeckA',
     pos = {x = 0, y = 0},
     loc_txt = {
@@ -739,8 +720,13 @@ SMODS.Back{
                 G.GAME.dollars = 100
 
                 -- Add Greedy Joker and Midas Mask
-                --add_joker('j_7dd_greed', nil, true, true)
-                joker_add('j_7dd_greed')
+                greed = {
+                    key = 'j_7dd_greed',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(greed)
 
                 for _, card in ipairs(G.playing_cards) do
 
@@ -779,9 +765,9 @@ SMODS.Atlas{
     py = 95
 }
 
-SMODS.Back{
+LUST_DECK = SMODS.Back{
     name = 'Deck of Lust',
-    key = 'lustDeck',
+    key = 'lust',
     atlas = 'LustDeckA',
     pos = {x = 0, y = 0},
     loc_txt = {
@@ -808,7 +794,13 @@ SMODS.Back{
                 end
 
                 -- Add eternal Lust Joker
-                joker_add('j_7dd_lust')
+                lust = {
+                    key = 'j_7dd_lust',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(lust)
 
                 return true
             end
@@ -825,9 +817,9 @@ SMODS.Atlas{
 
 }
 
-SMODS.Back{
+GLUTTONY_DECK = SMODS.Back{
     name = 'Deck of Gluttony',
-    key = 'gluttonyDeck',
+    key = 'gluttony',
     atlas = 'GluttonyDeckA',
     pos = {x = 0, y = 0},
     loc_txt = {
@@ -849,7 +841,13 @@ SMODS.Back{
             func = function ()
 
                 -- Add eternal Gluttony Joker
-                joker_add('j_7dd_gluttony')
+                gluttony = {
+                    key = 'j_7dd_gluttony',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(gluttony)
 
                 return true
             end
@@ -866,9 +864,9 @@ SMODS.Atlas{
     py = 95
 }
 
-SMODS.Back{
+ENVY_DECK = SMODS.Back{
     name = 'Deck of Envy',
-    key = 'envyDeck',
+    key = 'envy',
     atlas = 'EnvyDeckA',
     pos = {x = 0, y = 0},
     loc_txt = {
@@ -890,7 +888,13 @@ SMODS.Back{
             func = function ()
 
                 -- Add eternal Envy Joker
-                joker_add('j_7dd_envy')
+                envy = {
+                    key = 'j_7dd_envy',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(envy)
 
                 return true
             end
@@ -906,9 +910,9 @@ SMODS.Atlas{
     py = 95
 }
 
-SMODS.Back{
+WRATH_DECK = SMODS.Back{
     name = 'Deck of Wrath',
-    key = 'wrathDeck',
+    key = 'wrath',
     atlas = 'WrathDeckA',
     pos = {x = 0, y = 0},
     loc_txt = {
@@ -930,7 +934,13 @@ SMODS.Back{
             func = function ()
 
                 -- Add eternal Wrath Joker
-                joker_add('j_7dd_wrath')
+                wrath = {
+                    key = 'j_7dd_wrath',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(wrath)
 
                 return true
             end
@@ -946,9 +956,9 @@ SMODS.Atlas{
     py = 95
 }
 
-SMODS.Back{
+PRIDE_DECK = SMODS.Back{
     name = 'Deck of Pride',
-    key = 'prideDeck',
+    key = 'pride',
     atlas = 'PrideDeckA',
     pos = {x = 0, y = 0},
     loc_txt = {
@@ -973,7 +983,13 @@ SMODS.Back{
             func = function ()
 
                 -- Add eternal Pride Joker
-                joker_add('j_7dd_pride')
+                pride = {
+                    key = 'j_7dd_pride',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(pride)
 
                 return true
             end
@@ -989,9 +1005,9 @@ SMODS.Atlas{
     py = 95
 }
 
-SMODS.Back{
+SLOTH_DECK = SMODS.Back{
     name = 'Deck of Sloth',
-    key = 'slothDeck',
+    key = 'sloth',
     atlas = 'SlothDeckA',
     pos = {x = 0, y = 0},
     loc_txt = {
@@ -1013,10 +1029,24 @@ SMODS.Back{
             func = function ()
 
                 -- Add eternal Sloth Joker
-                joker_add('j_7dd_sloth')
+                sloth = {
+                    key = 'j_7dd_sloth',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(sloth)
 
                 return true
             end
         }))
     end,
 }
+
+----------------------------------------------
+--------------CARD SLEEVES--------------------
+
+-- Load Card Sleeves if mod is installed
+if CardSleeves then
+    SMODS.load_file('cardsleeves.lua')()
+end
