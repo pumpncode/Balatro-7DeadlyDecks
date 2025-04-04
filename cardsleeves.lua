@@ -1,13 +1,18 @@
 --- Card Sleeves Support for Seven Deadly Decks
 
+SMODS.Atlas{
+    key = "7DD_Sleeves",
+    path = "7DD_Sleeves.png",
+    px = 73,
+    py = 95
+}
+
 -- Sleeve of Greed
 CardSleeves.Sleeve{
     key = "greed",
     
-    -- TODO: Make art, and add atlas and pos
-    prefix_config = {atlas=false},
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 1, y = 3 },
+    atlas = "7DD_Sleeves",
+    pos = { x = 0, y = 0 },
 
     loc_vars = function(self)
     
@@ -54,10 +59,8 @@ CardSleeves.Sleeve{
 CardSleeves.Sleeve{
     key = "lust",
     
-    -- TODO: Make art, and add atlas and pos
-    prefix_config = {atlas=false},
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 1, y = 3 },
+    atlas = "7DD_Sleeves",
+    pos = { x = 1, y = 0 },
 
     loc_vars = function(self)
     
@@ -104,10 +107,8 @@ CardSleeves.Sleeve{
 CardSleeves.Sleeve{
     key = "gluttony",
     
-    -- TODO: Make art, and add atlas and pos
-    prefix_config = {atlas=false},
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 1, y = 3 },
+    atlas = "7DD_Sleeves",
+    pos = { x = 2, y = 0 },
 
     loc_vars = function(self)
     
@@ -154,10 +155,8 @@ CardSleeves.Sleeve{
 CardSleeves.Sleeve{
     key = "envy",
     
-    -- TODO: Make art, and add atlas and pos
-    prefix_config = {atlas=false},
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 1, y = 3 },
+    atlas = "7DD_Sleeves",
+    pos = { x = 3, y = 0 },
 
     loc_vars = function(self)
     
@@ -204,10 +203,8 @@ CardSleeves.Sleeve{
 CardSleeves.Sleeve{
     key = "wrath",
     
-    -- TODO: Make art, and add atlas and pos
-    prefix_config = {atlas=false},
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 1, y = 3 },
+    atlas = "7DD_Sleeves",
+    pos = { x = 4, y = 0 },
 
     loc_vars = function(self)
     
@@ -250,14 +247,60 @@ CardSleeves.Sleeve{
     end
 }
 
--- Sleeve of Greed
+-- Sleeve of Sloth
+CardSleeves.Sleeve{
+    key = "sloth",
+    
+    atlas = "7DD_Sleeves",
+    pos = { x = 5, y = 0 },
+
+    loc_vars = function(self)
+    
+        local key, vars
+
+        -- Enable negative joker if sleeve is used on Greed Deck
+        if self.get_current_deck_key() == "b_7dd_sloth" then
+            key = self.key .. "_alt"
+            
+            self.config = { is_negative = true }
+            vars = { self.config.is_negative }
+
+        else
+            key = self.key
+            self.config = { is_negative = false }
+            vars = { self.config.is_negative }
+
+        end
+
+        return { key = key, vars = vars }
+
+    end,
+
+    apply = function (self, sleeve)
+        if self.get_current_deck_key() == "b_7dd_sloth" then
+            G.E_MANAGER:add_event(Event({
+
+                func = function ()
+
+                    -- Set Greed Joker to negative
+                    G.jokers.cards[1]:set_edition("e_negative")
+
+                    return true
+                end
+            }))
+
+        else
+            SLOTH_DECK.apply(self, sleeve)
+        end
+    end
+}
+
+-- Sleeve of Pride
 CardSleeves.Sleeve{
     key = "pride",
     
-    -- TODO: Make art, and add atlas and pos
-    prefix_config = {atlas=false},
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 1, y = 3 },
+    atlas = "7DD_Sleeves",
+    pos = { x = 6, y = 0 },
 
     loc_vars = function(self)
     
@@ -296,56 +339,6 @@ CardSleeves.Sleeve{
 
         else
             PRIDE_DECK.apply(self, sleeve)
-        end
-    end
-}
-
--- Sleeve of Sloth
-CardSleeves.Sleeve{
-    key = "sloth",
-    
-    -- TODO: Make art, and add atlas and pos
-    prefix_config = {atlas=false},
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 1, y = 3 },
-
-    loc_vars = function(self)
-    
-        local key, vars
-
-        -- Enable negative joker if sleeve is used on Greed Deck
-        if self.get_current_deck_key() == "b_7dd_sloth" then
-            key = self.key .. "_alt"
-            
-            self.config = { is_negative = true }
-            vars = { self.config.is_negative }
-
-        else
-            key = self.key
-            self.config = { is_negative = false }
-            vars = { self.config.is_negative }
-
-        end
-
-        return { key = key, vars = vars }
-
-    end,
-    
-    apply = function (self, sleeve)
-        if self.get_current_deck_key() == "b_7dd_sloth" then
-            G.E_MANAGER:add_event(Event({
-
-                func = function ()
-
-                    -- Set Greed Joker to negative
-                    G.jokers.cards[1]:set_edition("e_negative")
-
-                    return true
-                end
-            }))
-
-        else
-            SLOTH_DECK.apply(self, sleeve)
         end
     end
 }

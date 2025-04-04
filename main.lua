@@ -2,11 +2,13 @@
 --------------CUSTOM JOKERS-------------------
 
 SMODS.Atlas{
-    key = "GreedJokerA",
-    path = "GreedCard.png",
+    key = "7DD_Jokers",
+    path = "7DD_Jokers.png",
     px = 71,
     py = 95
 }
+
+-- Greed Joker
 
 SMODS.Joker{
     key = 'greed',
@@ -25,7 +27,7 @@ SMODS.Joker{
         }
     },
 
-    atlas = 'GreedJokerA',
+    atlas = '7DD_Jokers',
     pos = {x = 0, y = 0},
 
     rarity = 3,
@@ -76,12 +78,6 @@ SMODS.Joker{
 }
 
 -- Lust Joker
-SMODS.Atlas{
-    key = "LustJokerA",
-    path = "LustCard.png",
-    px = 71,
-    py = 95
-}
 
 SMODS.Joker{
     key = 'lust',
@@ -103,8 +99,8 @@ SMODS.Joker{
         }
     },
 
-    atlas = 'LustJokerA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Jokers',
+    pos = {x = 1, y = 0},
 
     rarity = 3,
     blueprint_compat = true,
@@ -160,12 +156,7 @@ SMODS.Joker{
     end,
 }
 
-SMODS.Atlas{
-    key = 'GluttonyJokerA',
-    path = 'GluttonyCard.png',
-    px = 71,
-    py = 95
-}
+-- Gluttony Joker
 
 SMODS.Joker{
     key = 'gluttony',
@@ -195,8 +186,8 @@ SMODS.Joker{
         return {vars = {center.ability.extra.multAdd, center.ability.extra.mult}}
     end,
 
-    atlas = 'GluttonyJokerA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Jokers',
+    pos = {x = 2, y = 0},
 
     rarity = 3,
     blueprint_compat = false,
@@ -253,13 +244,6 @@ SMODS.Joker{
 }
 
 -- Envy Joker
-SMODS.Atlas{
-    key = 'EnvyJokerA',
-    path = 'EnvyCard.png',
-    px = 71,
-    py = 95
-
-}
 
 SMODS.Joker{
     key = 'envy',
@@ -279,8 +263,8 @@ SMODS.Joker{
         }
     },
 
-    atlas = 'EnvyJokerA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Jokers',
+    pos = {x = 3, y = 0},
 
     rarity = 3,
     blueprint_compat = false,
@@ -347,12 +331,6 @@ SMODS.Joker{
 }
 
 -- Wrath Joker
-SMODS.Atlas{
-    key = 'WrathJokerA',
-    path = 'WrathCard.png',
-    px = 71,
-    py = 95
-}
 
 SMODS.Joker{
     key = 'wrath',
@@ -380,8 +358,8 @@ SMODS.Joker{
         return {vars = {center.ability.extra.aMax}}
     end,
 
-    atlas = 'WrathJokerA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Jokers',
+    pos = {x = 4, y = 0},
 
     rarity = 3,
     blueprint_compat = false,
@@ -451,14 +429,117 @@ SMODS.Joker{
     end
 }
 
--- Pride Joker
-SMODS.Atlas{
-    key = 'PrideJokerA',
-    path = 'PrideCard.png',
-    px = 71,
-    py = 95
+-- Sloth Joker
 
+SMODS.Joker{
+    key = 'sloth',
+    loc_txt = {
+        name = 'Sloth',
+        text = {
+            'When a hand is played,',
+            '{C:green}#1# in #2#{} chance for',
+            'the hand to {C:attention}not score{},',
+            'and gain {X:mult,C:white}X#3#{} Mult.',
+            'Chance increases by {C:attention}#5#{}',
+            'every {C:attention}scored hand{}.',
+            '{X:mult,C:white}Xmult{} decreases over time.',
+            '{C:inactive}(Currently{} {X:mult,C:white}X#4#{} {C:inactive}Mult){}'
+        },
+
+        unlock = {
+            'Play with the',
+            '{C:blue}Deck of Sloth{}',
+            'at least once.'
+        }
+    },
+
+    config = { extra = {
+        MaxOdds = 100,
+        odds = 2,
+        XmultGain = 2,
+        Xmult = 1,
+        XmultDec = 0.1,
+        oddsInc = 5,
+    }},
+
+    loc_vars = function(self, info_queue, center)
+        return {vars = {
+            G.GAME and G.GAME.probabilities.normal or 1,
+            center.ability.extra.odds,
+            center.ability.extra.XmultGain,
+            center.ability.extra.Xmult,
+            center.ability.extra.oddsInc,
+        }}
+    end,
+
+    atlas = '7DD_Jokers',
+    pos = {x = 5, y = 0},
+
+    rarity = 3,
+    blueprint_compat = false,
+
+    unlocked = false,
+    discovered = false,
+
+    in_pool = function(self)
+        return false
+    end,
+
+    calculate = function(self, card, context)
+        
+        if context.joker_main and not context.blueprint then
+            
+            -- Run probabilities
+            local roll = pseudorandom('sloth')
+
+            if roll < G.GAME.probabilities.normal/card.ability.extra.odds then
+                
+                -- Hand does not score
+                hand_chips = 0
+                mult = 0
+
+                -- Reset odds
+                card.ability.extra.odds = card.ability.extra.MaxOdds
+
+                -- Increase mult
+                card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.XmultGain
+
+                return {
+                    message = 'Zzz...',
+                    colour = G.C.FILTER,
+                    card = card,
+                }
+
+            else
+
+                -- Hand scores. Increase odds. Dont go pass 1/1
+                if card.ability.extra.odds > card.ability.extra.oddsInc then
+                    card.ability.extra.odds = card.ability.extra.odds - card.ability.extra.oddsInc
+                end
+
+                -- Get mult to score before decrease
+                local Xmult = card.ability.extra.Xmult
+
+                -- Decrease mult. Dont go pass X1
+                if card.ability.extra.Xmult > 1 then
+                    card.ability.extra.Xmult = card.ability.extra.Xmult - card.ability.extra.XmultDec
+                end
+
+                return {
+                    message = 'X' .. tostring(Xmult),
+                    colour = G.C.MULT,
+                    card = card,
+                    Xmult_mod = Xmult
+                }
+
+            end
+
+        end
+
+    end
 }
+
+-- Pride Joker
 
 SMODS.Joker{
     key = 'pride',
@@ -495,8 +576,8 @@ SMODS.Joker{
         }}
     end,
 
-    atlas = 'PrideJokerA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Jokers',
+    pos = {x = 6, y = 0},
 
     rarity = 3,
     blueprint_compat = false,
@@ -568,138 +649,22 @@ SMODS.Joker{
     end
 }
 
--- Sloth Joker
-SMODS.Atlas{
-    key = 'SlothJokerA',
-    path = 'SlothCard.png',
-    px = 71,
-    py = 95
-
-}
-
-SMODS.Joker{
-    key = 'sloth',
-    loc_txt = {
-        name = 'Sloth',
-        text = {
-            'When a hand is played,',
-            '{C:green}#1# in #2#{} chance for',
-            'the hand to {C:attention}not score{},',
-            'and gain {X:mult,C:white}X#3#{} Mult.',
-            'Chance increases by {C:attention}#5#{}',
-            'every {C:attention}scored hand{}.',
-            '{X:mult,C:white}Xmult{} decreases over time.',
-            '{C:inactive}(Currently{} {X:mult,C:white}X#4#{} {C:inactive}Mult){}'
-        },
-
-        unlock = {
-            'Play with the',
-            '{C:blue}Deck of Sloth{}',
-            'at least once.'
-        }
-    },
-
-    config = { extra = {
-        MaxOdds = 100,
-        odds = 2,
-        XmultGain = 2,
-        Xmult = 1,
-        XmultDec = 0.1,
-        oddsInc = 5,
-    }},
-
-    loc_vars = function(self, info_queue, center)
-        return {vars = {
-            G.GAME and G.GAME.probabilities.normal or 1,
-            center.ability.extra.odds,
-            center.ability.extra.XmultGain,
-            center.ability.extra.Xmult,
-            center.ability.extra.oddsInc,
-        }}
-    end,
-
-    atlas = 'SlothJokerA',
-    pos = {x = 0, y = 0},
-
-    rarity = 3,
-    blueprint_compat = false,
-
-    unlocked = false,
-    discovered = false,
-
-    in_pool = function(self)
-        return false
-    end,
-
-    calculate = function(self, card, context)
-        
-        if context.joker_main and not context.blueprint then
-            
-            -- Run probabilities
-            local roll = pseudorandom('sloth')
-
-            if roll < G.GAME.probabilities.normal/card.ability.extra.odds then
-                
-                -- Hand does not score
-                hand_chips = 0
-                mult = 0
-
-                -- Reset odds
-                card.ability.extra.odds = card.ability.extra.MaxOdds
-
-                -- Increase mult
-                card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.XmultGain
-
-                return {
-                    message = 'Zzz...',
-                    colour = G.C.FILTER,
-                    card = card,
-                }
-
-            else
-
-                -- Hand scores. Increase odds. Dont go pass 1/1
-                if card.ability.extra.odds > card.ability.extra.oddsInc then
-                    card.ability.extra.odds = card.ability.extra.odds - card.ability.extra.oddsInc
-                end
-
-                -- Get mult to score before decrease
-                local Xmult = card.ability.extra.Xmult
-
-                -- Decrease mult. Dont go pass X1
-                if card.ability.extra.Xmult > 1 then
-                    card.ability.extra.Xmult = card.ability.extra.Xmult - card.ability.extra.XmultDec
-                end
-
-                return {
-                    message = 'X' .. tostring(Xmult),
-                    colour = G.C.MULT,
-                    card = card,
-                    Xmult_mod = Xmult
-                }
-
-            end
-
-        end
-
-    end
-}
-
 ----------------------------------------------
 -----------------DECKS-------------------------
 
---- Greed Deck
 SMODS.Atlas{
-    key = 'GreedDeckA',
-    path = 'GreedDeck.png',
+    key = '7DD_Decks',
+    path = '7DD_Decks.png',
     px = 71,
     py = 95
 }
+
+--- Greed Deck
 
 GREED_DECK = SMODS.Back{
     name = 'Deck of Greed',
     key = 'greed',
-    atlas = 'GreedDeckA',
+    atlas = '7DD_Decks',
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'Deck of Greed',
@@ -758,18 +723,12 @@ GREED_DECK = SMODS.Back{
 }
 
 -- Lust Deck
-SMODS.Atlas{
-    key = 'LustDeckA',
-    path = 'LustDeck.png',
-    px = 71,
-    py = 95
-}
 
 LUST_DECK = SMODS.Back{
     name = 'Deck of Lust',
     key = 'lust',
-    atlas = 'LustDeckA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Decks',
+    pos = {x = 1, y = 0},
     loc_txt = {
         name = 'Deck of Lust',
         text = {
@@ -809,19 +768,12 @@ LUST_DECK = SMODS.Back{
 }
 
 -- Gluttony Deck
-SMODS.Atlas{
-    key = 'GluttonyDeckA',
-    path = 'GluttonyDeck.png',
-    px = 71,
-    py = 95
-
-}
 
 GLUTTONY_DECK = SMODS.Back{
     name = 'Deck of Gluttony',
     key = 'gluttony',
-    atlas = 'GluttonyDeckA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Decks',
+    pos = {x = 2, y = 0},
     loc_txt = {
         name = 'Deck of Gluttony',
         text = {
@@ -857,18 +809,12 @@ GLUTTONY_DECK = SMODS.Back{
 }
 
 -- Envy Deck
-SMODS.Atlas{
-    key = 'EnvyDeckA',
-    path = 'EnvyDeck.png',
-    px = 71,
-    py = 95
-}
 
 ENVY_DECK = SMODS.Back{
     name = 'Deck of Envy',
     key = 'envy',
-    atlas = 'EnvyDeckA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Decks',
+    pos = {x = 3, y = 0},
     loc_txt = {
         name = 'Deck of Envy',
         text = {
@@ -903,18 +849,12 @@ ENVY_DECK = SMODS.Back{
 }
 
 -- Wrath Deck
-SMODS.Atlas{
-    key = 'WrathDeckA',
-    path = 'WrathDeck.png',
-    px = 71,
-    py = 95
-}
 
 WRATH_DECK = SMODS.Back{
     name = 'Deck of Wrath',
     key = 'wrath',
-    atlas = 'WrathDeckA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Decks',
+    pos = {x = 4, y = 0},
     loc_txt = {
         name = 'Deck of Wrath',
         text = {
@@ -948,19 +888,53 @@ WRATH_DECK = SMODS.Back{
     end,
 }
 
--- Pride Deck
-SMODS.Atlas{
-    key = 'PrideDeckA',
-    path = 'PrideDeck.png',
-    px = 71,
-    py = 95
+-- Sloth Deck
+
+SLOTH_DECK = SMODS.Back{
+    name = 'Deck of Sloth',
+    key = 'sloth',
+    atlas = '7DD_Decks',
+    pos = {x = 5, y = 0},
+    loc_txt = {
+        name = 'Deck of Sloth',
+        text = {
+            '{C:blue}+1{} hands,',
+            'Start with a',
+            '{C:blue}sleepy Joker{}'
+        },
+    },
+
+    config = {
+        hands = 1,
+    },
+
+    apply = function ()
+        G.E_MANAGER:add_event(Event({
+
+            func = function ()
+
+                -- Add eternal Sloth Joker
+                sloth = {
+                    key = 'j_7dd_sloth',
+                    set = 'Joker',
+                    stickers = {'eternal'},
+                }
+
+                SMODS.add_card(sloth)
+
+                return true
+            end
+        }))
+    end,
 }
+
+-- Pride Deck
 
 PRIDE_DECK = SMODS.Back{
     name = 'Deck of Pride',
     key = 'pride',
-    atlas = 'PrideDeckA',
-    pos = {x = 0, y = 0},
+    atlas = '7DD_Decks',
+    pos = {x = 6, y = 0},
     loc_txt = {
         name = 'Deck of Pride',
         text = {
@@ -990,52 +964,6 @@ PRIDE_DECK = SMODS.Back{
                 }
 
                 SMODS.add_card(pride)
-
-                return true
-            end
-        }))
-    end,
-}
-
--- Sloth Deck
-SMODS.Atlas{
-    key = 'SlothDeckA',
-    path = 'SlothDeck.png',
-    px = 71,
-    py = 95
-}
-
-SLOTH_DECK = SMODS.Back{
-    name = 'Deck of Sloth',
-    key = 'sloth',
-    atlas = 'SlothDeckA',
-    pos = {x = 0, y = 0},
-    loc_txt = {
-        name = 'Deck of Sloth',
-        text = {
-            '{C:blue}+1{} hands,',
-            'Start with a',
-            '{C:blue}sleepy Joker{}'
-        },
-    },
-
-    config = {
-        hands = 1,
-    },
-
-    apply = function ()
-        G.E_MANAGER:add_event(Event({
-
-            func = function ()
-
-                -- Add eternal Sloth Joker
-                sloth = {
-                    key = 'j_7dd_sloth',
-                    set = 'Joker',
-                    stickers = {'eternal'},
-                }
-
-                SMODS.add_card(sloth)
 
                 return true
             end
