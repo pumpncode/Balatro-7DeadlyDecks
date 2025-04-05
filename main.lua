@@ -1,3 +1,11 @@
+-- Mod Icon
+SMODS.Atlas{
+    key = 'modicon',
+    path = 'icon.png',
+    px = 26,
+    py = 26
+}
+
 ----------------------------------------------
 --------------CUSTOM JOKERS-------------------
 
@@ -70,11 +78,7 @@ SMODS.Joker{
                 colour = G.C.MULT
             }
         end
-    end,
-
-    in_pool = function(self, wawa, wawa2)
-        return true
-    end,
+    end
 }
 
 -- Lust Joker
@@ -163,10 +167,11 @@ SMODS.Joker{
     loc_txt = {
         name = 'Gluttony',
         text = {
-            'Before each {C:attention}played hand{},',
+            'Before every other {C:attention}played hand{},',
             '{C:red}Destroy{} one random card',
             'held in hand and gain',
             '{C:mult}+#1#{} Mult per card',
+            '{C:inactive,s:0.8}Does not consume when no cards in hand.{}',
             '{C:inactive}(Currently{} {C:mult}+#2#{} {C:inactive}Mult){}'
         },
 
@@ -180,6 +185,9 @@ SMODS.Joker{
     config = { extra = {
         multAdd = 3,
         mult = 0,
+        extra = {
+            consume = false
+        }
     }},
 
     loc_vars = function(self, info_queue, center)
@@ -201,33 +209,41 @@ SMODS.Joker{
 
     calculate = function(self, card, context)
         
-        -- Display message
-        if context.before then
-            
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after',
-                delay = 0.1,
-                func = function ()
-                    
-                    -- Get random card from hand
-                    local dCard = pseudorandom_element(G.hand.cards, pseudoseed('gluttony'))
+        -- Consume card if flag is set
+        if card.ability.extra.consume and context.before then
 
-                    -- Destroy card
-                    dCard:start_dissolve()
+            -- Only consume if more than 1 card in deck and in hand
+            if #G.playing_cards > 1 and #G.hand.cards > 0 then
 
-                    -- Increase mult
-                    card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.multAdd
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.1,
+                    func = function ()
+                        
+                        -- Get random card from hand
+                        local dCard = pseudorandom_element(G.hand.cards, pseudoseed('gluttony'))
+                        
+                        -- Destroy card
+                        dCard:start_dissolve()
+                        
+                        return true
+                    end
+                }))
+                
+                -- Increase mult
+                card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.multAdd
 
-                    return true
-                end
-            }))
-
-            return {
-                message = 'Consumed Card',
-                colour = G.C.RED
-            }
-
+                -- Display message
+                return {
+                    message = 'Consumed Card',
+                    colour = G.C.RED
+                }
+ 
+             end
         end
+
+        -- Inverse flag
+        card.ability.extra.consume = not card.ability.extra.consume
 
         if context.joker_main and not context.blueprint then
 
