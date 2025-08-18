@@ -1,4 +1,8 @@
 # 7 Deadly Decks
+
+> [!WARNING]
+> <b>All future development will be moved to the <a href="https://codeberg.org/AstroLightz/Balatro-7DeadlyDecks">Codeberg Mirror</a> going forward!!!</b>
+
 **7 Deadly Decks** is a mod for Balatro which adds decks (and Jokers) themed around the 7 Deadly Sins
 
 ## Requirements
